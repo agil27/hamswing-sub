@@ -118,8 +118,8 @@ function drawRankList(res) {
 
     //排序
     rankInfo.sort((a, b) => {
-        let scoreA = parseInt(m.score)
-        let scoreB = parseInt(n.score)
+        let scoreA = parseInt(a.score)
+        let scoreB = parseInt(b.score)
 
         if (typeof scoreA !== 'number' || scoreA === NaN) {
             scoreA = -1
@@ -134,9 +134,9 @@ function drawRankList(res) {
         } else if (scoreA < scoreB) {
             return 1
         } else {
-            if (m.nickname > n.nickname) {
+            if (a.nickname > b.nickname) {
                 return 1
-            } else if (m.nickname < n.nickname) {
+            } else if (a.nickname < b.nickname) {
                 return -1
             }
             return 0
@@ -164,6 +164,14 @@ function draw(rankInfo, rankLength) {
         let avatar = rankItem.avatar + '?aaa=aa.jpg'
         let rank = '' + rankItem.rank
 
+        for (let j = 0; j < 5; j++) {
+            let y = j * heightPerUser
+            if (j % 2 == 1) {
+                context.fillStyle = "#dd8843"
+                context.fillRect(5, y, widthPerUser, heightPerUser)
+            }
+        }
+        
         context.font = '36px Verdana'
 
         if (i % 2 == 0) {
@@ -188,16 +196,7 @@ function draw(rankInfo, rankLength) {
             let imgWidth = 60
             context.drawImage(img, 130, y + 10, imgWidth, imgHeight);
         }
-        //console.log('画的图片是 ', img)
-        
-        for (let j = 0; j < 5; j++) {
-            let y = j * heightPerUser
-            if (j % 2 == 1) {
-                context.fillStyle = "#dd8843"
-                context.fillRect(5, y, widthPerUser, heightPerUser)
-            }
-        }
-        
+        //console.log('画的图片是 ', img)     
         //console.log('结束的画布为 ', context)
     }
 }
