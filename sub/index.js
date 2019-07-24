@@ -147,7 +147,6 @@ function draw (rankInfo, rankLength, page) {
   for (let i = 5 * actualPage; i < min(5 * actualPage + 5, rankLength); i++) {
     let rankItem = rankInfo[i]
     let y = (i % 5) * heightPerUser
-    //console.log('作画区域为 ', context)
     context.textAlign = 'left'
 
     let nickname = rankItem.nickname
@@ -155,7 +154,6 @@ function draw (rankInfo, rankLength, page) {
     let avatar = rankItem.avatar + '?aaa=aa.jpg'
     let rank = '' + rankItem.rank
 
-    console.log(rank)
     context.font = '36px Verdana'
 
     if (i % 5 === 0 || i % 5 === 2 || i % 5 === 4) {
