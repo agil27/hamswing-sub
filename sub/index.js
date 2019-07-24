@@ -3,6 +3,14 @@ let context = null
 let heightPerUser = 80
 let widthPerUser = 700
 
+function min(a, b) {
+  return a < b ? a : b
+}
+
+function max(a, b) {
+  return a > b ? a : b
+}
+
 wx.onMessage((data) => {
   if (data.message === 'score') {
     wx.getUserCloudStorage({
@@ -32,6 +40,7 @@ wx.onMessage((data) => {
       }
     })
   } else {
+    let page = data.page
     console.log('正在渲染中...')
     if (sharedCanvas === null) {
       sharedCanvas = wx.getSharedCanvas()
@@ -40,7 +49,7 @@ wx.onMessage((data) => {
       context = sharedCanvas.getContext('2d')
     }
 
-    context.clearRect(0, 0, widthPerUser, heightPerUser * 10)
+    context.clearRect(0, 0, widthPerUser, heightPerUser * 5)
 
     wx.getUserCloudStorage({
       keyList: ['score'],
@@ -50,7 +59,7 @@ wx.onMessage((data) => {
         wx.getFriendCloudStorage({
           keyList: ['score'],
           success: (res) => {
-            drawRankList(res)
+            drawRankList(res, page)
           },
           fail: (res) => {
             console.log('获取好友信息失败')
@@ -65,7 +74,7 @@ wx.onMessage((data) => {
   }
 })
 
-function drawRankList (res) {
+function drawRankList (res, page) {
   console.log('准备绘制的用户好友信息为 ', res)
   if (res === null || res.data === null || res.data.length === null || res.data.length < 1) {
     console.log('好友信息不正确')
@@ -119,14 +128,26 @@ function drawRankList (res) {
 
   console.log('排行榜信息为 ', rankInfo)
   // 绘制
-  draw(rankInfo, rankLength)
+  draw(rankInfo, rankLength, page)
 }
 
-function draw (rankInfo, rankLength) {
-  for (let i = 0; i < rankLength; i++) {
+function draw (rankInfo, rankLength, page) {
+  let actualPage = min(page, Math.floor(max(0, (rankLength - 1)) / 5))
+  //清空画布
+  context.clearRect(0, 0, widthPerUser, heightPerUser * 5)
+  //绘制背景
+  for (let j = 0; j < 5; j++) {
+    let y = j * heightPerUser
+    if (j % 2 == 1) {
+      context.fillStyle = '#dd8843'
+      context.fillRect(0, y, widthPerUser, heightPerUser)
+    }
+  }
+  //绘制信息
+  for (let i = 5 * actualPage; i < min(5 * actualPage + 5, rankLength); i++) {
     let rankItem = rankInfo[i]
-    let y = i * heightPerUser
-    console.log('作画区域为 ', context)
+    let y = (i % 5) * heightPerUser
+    //console.log('作画区域为 ', context)
     context.textAlign = 'left'
 
     let nickname = rankItem.nickname
@@ -134,24 +155,17 @@ function draw (rankInfo, rankLength) {
     let avatar = rankItem.avatar + '?aaa=aa.jpg'
     let rank = '' + rankItem.rank
 
-    for (let j = 0; j < 5; j++) {
-      let y = j * heightPerUser
-      if (j % 2 == 1) {
-        context.fillStyle = '#dd8843'
-        context.fillRect(5, y, widthPerUser, heightPerUser)
-      }
-    }
-
+    console.log(rank)
     context.font = '36px Verdana'
 
-    if (i % 2 == 0) {
+    if (i % 5 === 0 || i % 5 === 2 || i % 5 === 4) {
       context.fillStyle = '#000000'
     } else {
       context.fillStyle = '#ffffff'
     }
 
     context.fillText(rank, 50, y + 50)
-    context.font = '32px Calibri'
+    context.font = '28px Calibri'
     context.fillText(score, 600, y + 50)
 
     context.font = '24px Verdana'
