@@ -1,3 +1,4 @@
+// 定义画布的基本参数
 let sharedCanvas = null
 let context = null
 let heightPerUser = 80
@@ -13,10 +14,12 @@ function max(a, b) {
 
 wx.onMessage((data) => {
   if (data.message === 'score') {
+    // 设定最高分
     wx.getUserCloudStorage({
       keyList: ['score'],
       success: (res) => {
         if (res.KVDataList === null || res.KVDataList.length < 1 || data.number > parseInt(res.KVDataList[0]['value'])) {
+          // 超过最高分或者该用户还没有分数
           wx.setUserCloudStorage({
             KVDataList: [{
               key: 'score',
@@ -81,7 +84,7 @@ function drawRankList (res, page) {
     return
   }
 
-  // 存储好友数据
+  // 重新组织、存储好友数据
   let rankInfo = []
   let data = res.data
   for (let i in data) {
@@ -96,6 +99,7 @@ function drawRankList (res, page) {
 
   let rankLength = rankInfo.length
 
+  // 对好友信息进行排序
   rankInfo.sort((a, b) => {
     let scoreA = parseInt(a.score)
     let scoreB = parseInt(b.score)
@@ -133,9 +137,9 @@ function drawRankList (res, page) {
 
 function draw (rankInfo, rankLength, page) {
   let actualPage = min(page, Math.floor(max(0, (rankLength - 1)) / 5))
-  //清空画布
+  // 清空画布
   context.clearRect(0, 0, widthPerUser, heightPerUser * 5)
-  //绘制背景
+  // 绘制背景
   for (let j = 0; j < 5; j++) {
     let y = j * heightPerUser
     if (j % 2 == 1) {
@@ -143,7 +147,7 @@ function draw (rankInfo, rankLength, page) {
       context.fillRect(0, y, widthPerUser, heightPerUser)
     }
   }
-  //绘制信息
+  // 绘制信息
   for (let i = 5 * actualPage; i < min(5 * actualPage + 5, rankLength); i++) {
     let rankItem = rankInfo[i]
     let y = (i % 5) * heightPerUser
@@ -156,12 +160,14 @@ function draw (rankInfo, rankLength, page) {
 
     context.font = '36px Verdana'
 
+    // 根据背景颜色的深浅来决定绘制文字的颜色
     if (i % 5 === 0 || i % 5 === 2 || i % 5 === 4) {
       context.fillStyle = '#000000'
     } else {
       context.fillStyle = '#ffffff'
     }
 
+    // 绘制排名、姓名、得分
     context.fillText(rank, 50, y + 50)
     context.font = '28px Calibri'
     context.fillText(score, 600, y + 50)
@@ -169,6 +175,7 @@ function draw (rankInfo, rankLength, page) {
     context.font = '24px Verdana'
     context.fillText(nickname, 230, y + 50)
 
+    // 绘制头像
     let img = wx.createImage()
     img.src = avatar
     img.onload = (res) => {
