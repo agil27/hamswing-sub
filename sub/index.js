@@ -136,7 +136,11 @@ function drawRankList (res, page) {
 }
 
 function draw (rankInfo, rankLength, page) {
+  if (!page || page === undefined) {
+    page = 0
+  }
   let actualPage = min(page, Math.floor(max(0, (rankLength - 1)) / 5))
+  console.log(actualPage)
   // 清空画布
   context.clearRect(0, 0, widthPerUser, heightPerUser * 5)
   // 绘制背景
