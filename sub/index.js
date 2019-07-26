@@ -4,11 +4,11 @@ let context = null
 let heightPerUser = 80
 let widthPerUser = 700
 
-function min(a, b) {
+function min (a, b) {
   return a < b ? a : b
 }
 
-function max(a, b) {
+function max (a, b) {
   return a > b ? a : b
 }
 
